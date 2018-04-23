@@ -6,7 +6,7 @@
 
 #define BSIZE 256
 #define NSTRS 3
-#define SOCKET_ADDRESS "mysock"
+#define SOCKET_ADDRESS "mysocket"
 
 
 
@@ -30,6 +30,7 @@ int main(int argc, char *argv[])
   /* Add Code: Populate the sockaddr_un struct */
 
   strcpy(saun.sun_path, SOCKET_ADDRESS);
+  
   saun.sun_family = AF_UNIX;
 
   /* Add Code: Create the client session socket */

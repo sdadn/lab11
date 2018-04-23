@@ -7,13 +7,8 @@
 
 #define QSIZE 5
 #define BSIZE 256
-#define SOCKET_ADDRESS "mysock"
+#define SOCKET_ADDRESS "mysocket"
 
-
-  // struct sockaddr_un {
-  //     sa_family_t sun_family;
-  //     char sun_path[100];
-  // };
 
 
 /*
