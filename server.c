@@ -9,13 +9,19 @@
 #define BSIZE 256
 #define SOCKET_ADDRESS "mysock"
 
+
+  // struct sockaddr_un {
+  //     sa_family_t sun_family;
+  //     char sun_path[100];
+  // };
+
+
 /*
  * Convert a null-terminated sting (one whose end is denoted by a byte
  * containing '\0') to all upper case letters by starting at the
  * beginning and going until the null byte is found.
  */
-void
-convert_string (char *cp)
+void convert_string (char *cp)
 {
   char *currp;	/* pointer to current position in the input string */
   int c;        /* return value of toupper is the converted letter */
@@ -32,10 +38,17 @@ int main(int argc, char *argv[])
   struct sockaddr_un saun;
   char buf[BSIZE];
 
-#if 0
+#if 1
   /* Add Code: Populate the sockaddr_un struct */
 
+  strcpy(saun.sun_path, SOCKET_ADDRESS);
+  saun.sun_family = AF_UNIX;
+
+
   /* Add Code: Create the handshake socket */
+  handshake_sockfd = socket(PF_UNIX, SOCK_STREAM, 0);
+
+
   if (handshake_sockfd < 0) {
     perror("Error Opening Socket");
     return EXIT_FAILURE;
@@ -49,6 +62,9 @@ int main(int argc, char *argv[])
   unlink(SOCKET_ADDRESS);
 
   /* Add Code: Bind the handshake socket to the sockaddr. */
+
+  ret = bind(handshake_sockfd, (struct sockaddr *) &saun, sizeof(saun));
+
   if (ret < 0) {
     perror("Error Binding Socket");
     return EXIT_FAILURE;
@@ -57,6 +73,9 @@ int main(int argc, char *argv[])
   /* Add Code: Make the handshake socket a listening socket, with a
    * specified Queue Size
    */
+
+    ret = listen(handshake_sockfd, 2);
+
   if (ret < 0) {
     perror("Error Listening on Socket");
     return EXIT_FAILURE;
@@ -65,6 +84,9 @@ int main(int argc, char *argv[])
   /* Add Code: Accept a connection on the handshake socket,
    * giving the session socket as the return value.
    */
+ session_sockfd = accept(handshake_sockfd, NULL, NULL);
+
+
   if (session_sockfd < 0) {
     perror("Error Accepting Socket");
     return EXIT_FAILURE;
@@ -75,9 +97,13 @@ int main(int argc, char *argv[])
    * write the line back to the client. Continue until there are no
    * more lines to read.
    */
-  while (?) {
-    printf("RECEIVED:\n%s", buf);
-    printf("SENDING:\n%s\n", buf);
+
+    while (read(session_sockfd, buf, BSIZE) > 0) {
+      printf("RECEIVED:\n%s", buf);
+      convert_string(buf);
+
+      printf("SENDING:\n%s\n", buf);
+      write(session_sockfd, buf, BSIZE);
   }
 
   close(session_sockfd);

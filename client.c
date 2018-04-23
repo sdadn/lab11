@@ -8,6 +8,8 @@
 #define NSTRS 3
 #define SOCKET_ADDRESS "mysock"
 
+
+
 /*
  * This is the set of strings we will send through the socket for
  * conversion
@@ -24,16 +26,24 @@ int main(int argc, char *argv[])
   struct sockaddr_un saun;
   char buf[BSIZE];
 
-#if 0
+#if 1
   /* Add Code: Populate the sockaddr_un struct */
 
+  strcpy(saun.sun_path, SOCKET_ADDRESS);
+  saun.sun_family = AF_UNIX;
+
   /* Add Code: Create the client session socket */
+  sockfd = socket(PF_UNIX, SOCK_STREAM, 0);
+
   if (sockfd < 0) {
     perror("Error Opening Socket");
     return EXIT_FAILURE;
   }
 
   /* Add Code: Connect the session socket to the server */
+
+  ret = connect(sockfd, (struct sockaddr *) &saun, sizeof(saun));
+
   if (ret < 0) {
     perror("Error Connecting Sockets");
     return EXIT_FAILURE;
@@ -43,8 +53,12 @@ int main(int argc, char *argv[])
    * server. Read the converted string and print it out before sending
    * the next string
    */
+
   for (i = 0; i < NSTRS; i++) {
+    write(sockfd, strs[i], BSIZE);
     printf("SENDING:\n%s", strs[i]);
+
+    read(sockfd, buf, BSIZE);
     printf("RECEIVED:\n%s\n", buf);
   }
 
